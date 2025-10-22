@@ -1,33 +1,48 @@
-import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { Product } from './product.model';
+// products.controller.ts
+import { Controller, Get, Post, Patch, Delete, Body, Param, HttpCode } from '@nestjs/common';
+import { ProductsService } from './product.service';
+import { Product } from './product.schema';
 
 @Controller('products')
-export class ProductController {
-    constructor(private readonly productService: ProductService) {}
+export class ProductsController {
+  constructor(private readonly productsService: ProductsService) {}
 
-    @Get()
-    getAllProducts(): Product[] {
-        return this.productService.getAllProducts();
-    }
+  // GET /products
+  @Get()
+  async findAll(): Promise<Product[]> {
+    return this.productsService.findAll();
+  }
 
-    @Post()
-    createProduct(
-        @Body('id') id: string,
-        @Body('title') title: string,
-        @Body('description') description: string,
-        @Body('price') price: number,
-    ): Product {
-        return this.productService.createProduct(id, title, description, price);
-    }
+  // GET /products/:id
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<Product> {
+    return this.productsService.findOne(id);
+  }
 
-    @Get(':id')
-    getProductById(@Param('id') id: string): Product | undefined {
-        return this.productService.getProductById(id);
-    }
+  // POST /products
+  // Body esperado: { "title": "...", "price": 123.45, "description": "..." }
+  @Post()
+  async create(
+    @Body() body: any,
+  ): Promise<Product> {
+    const { title, price, description } = body ?? {};
+    return this.productsService.create({ title, price, description } as any);
+  }
 
-    @Delete(':id')
-    deleteProduct(@Param('id') id: string): void {
-        this.productService.deleteProduct(id);
-    }
+  // PATCH /products/:id
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() body: any,
+  ): Promise<Product> {
+    const { title, price, description } = body ?? {};
+    return this.productsService.update(id, { title, price, description } as any);
+  }
+
+  // DELETE /products/:id
+  @Delete(':id')
+  @HttpCode(204)
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.productsService.delete(id);
+  }
 }

@@ -1,1 +1,1 @@
-# shop-startingproject
+# shop-starting-project

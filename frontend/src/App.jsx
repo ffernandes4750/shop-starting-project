@@ -21,6 +21,15 @@ function App() {
       });
   }, []);
 
+  function handleAddProduct(newProduct) {
+    console.log('Adding product:', newProduct);
+    axios.post('http://localhost:3000/products', newProduct)
+      .then((response) => {})
+      .catch((error) => {
+        console.error('Error adding product:', error);
+      });
+  }
+
   function handleAddItemToCart(id) {
     setShoppingCart((prevShoppingCart) => {
       const updatedItems = [...prevShoppingCart.items];
@@ -83,7 +92,11 @@ function App() {
         cart={shoppingCart}
         onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
       />
-      <Shop onAddItemToCart={handleAddItemToCart} products={products} />
+      <Shop 
+        onAddItemToCart={handleAddItemToCart} 
+        onAddProduct={handleAddProduct} 
+        products={products} 
+      />
     </>
   );
 }

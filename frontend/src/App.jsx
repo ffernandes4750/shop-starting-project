@@ -1,90 +1,39 @@
-import { useEffect, useState } from 'react';
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProducts, createProduct, deleteProduct } from "./api/products.js";
+import { addItemToCart, updateCartItemQuantity } from "./cartUtils.js";
 
-import Header from './components/Header.jsx';
-import Shop from './components/Shop.jsx';
-import axios from 'axios';  
+import Header from "./components/Header.jsx";
+import Shop from "./components/Shop.jsx";
 
 function App() {
-  const [products, setProducts] = useState([]);
+  const {
+    data: products = [],
+    isLoading,
+    isError,
+    error,
+    isFetching,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+  });
 
   const [shoppingCart, setShoppingCart] = useState({
     items: [],
   });
 
-  useEffect(() => { 
-    axios.get('http://localhost:3000/products')
-      .then((response) => {
-        setProducts(response.data); 
-      })
-      .catch((error) => {
-        console.error('Error fetching products:', error);
-      });
-  }, []);
-
-  function handleAddProduct(newProduct) {
-    console.log('Adding product:', newProduct);
-    axios.post('http://localhost:3000/products', newProduct)
-      .then((response) => {})
-      .catch((error) => {
-        console.error('Error adding product:', error);
-      });
+  function handleAddItemToCart(product) {
+    setShoppingCart((prevCart) => addItemToCart(prevCart, product));
   }
 
-  function handleAddItemToCart(id) {
-    setShoppingCart((prevShoppingCart) => {
-      const updatedItems = [...prevShoppingCart.items];
-
-      const existingCartItemIndex = updatedItems.findIndex(
-        (cartItem) => cartItem.id === id
-      );
-      const existingCartItem = updatedItems[existingCartItemIndex];
-
-      if (existingCartItem) {
-        const updatedItem = {
-          ...existingCartItem,
-          quantity: existingCartItem.quantity + 1,
-        };
-        updatedItems[existingCartItemIndex] = updatedItem;
-      } else {
-        const product = products.find((product) => product.id === id);
-        updatedItems.push({
-          id: id,
-          name: product.title,
-          price: product.price,
-          quantity: 1,
-        });
-      }
-
-      return {
-        items: updatedItems,
-      };
-    });
+  function handleUpdateCartItemQuantity(id, amount) {
+    setShoppingCart((prevCart) => updateCartItemQuantity(prevCart, id, amount));
   }
 
-  function handleUpdateCartItemQuantity(productId, amount) {
-    setShoppingCart((prevShoppingCart) => {
-      const updatedItems = [...prevShoppingCart.items];
-      const updatedItemIndex = updatedItems.findIndex(
-        (item) => item.id === productId
-      );
-
-      const updatedItem = {
-        ...updatedItems[updatedItemIndex],
-      };
-
-      updatedItem.quantity += amount;
-
-      if (updatedItem.quantity <= 0) {
-        updatedItems.splice(updatedItemIndex, 1);
-      } else {
-        updatedItems[updatedItemIndex] = updatedItem;
-      }
-
-      return {
-        items: updatedItems,
-      };
-    });
-  }
+  let message = null;
+  if (isLoading) message = <p>A carregar produtos…</p>;
+  if (isFetching) message = <p>A produtos…</p>;
+  if (isError) message = <p>Erro a obter produtos: {String(error)}</p>;
 
   return (
     <>
@@ -92,10 +41,12 @@ function App() {
         cart={shoppingCart}
         onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
       />
-      <Shop 
-        onAddItemToCart={handleAddItemToCart} 
-        onAddProduct={handleAddProduct} 
-        products={products} 
+      {message}
+      <Shop
+        onAddItemToCart={handleAddItemToCart}
+        onAddProduct={createProduct}
+        products={products}
+        removeItem={deleteProduct}
       />
     </>
   );

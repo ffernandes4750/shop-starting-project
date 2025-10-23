@@ -2,7 +2,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Product, ProductDocument } from './product.schema';
+import { Product, ProductDocument } from './schema/product.schema';
 
 @Injectable()
 export class ProductsService {
@@ -26,15 +26,14 @@ export class ProductsService {
     return newItem.save();
   }
 
-  async update(id: string, item: Product): Promise<Product> {
+  async update(id: string, patch: Partial<Product>): Promise<Product> {
     const updated = await this.productModel
-      .findByIdAndUpdate(id, item, { new: true, runValidators: true })
+      .findByIdAndUpdate(id, patch, { new: true, runValidators: true })
       .lean()
       .exec();
     if (!updated) throw new NotFoundException('Product not found');
     return updated;
   }
-
 
   async delete(id: string): Promise<{ deleted: boolean }> {
     const deleted = await this.productModel.findByIdAndDelete(id).lean().exec();

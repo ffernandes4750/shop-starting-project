@@ -13,7 +13,6 @@ const AddProductModal = forwardRef(function Modal({ onAddProduct }, ref) {
   });
 
   const newProduct = useRef({
-    id: "",
     title: "",
     price: 0,
     description: "",
@@ -29,7 +28,7 @@ const AddProductModal = forwardRef(function Modal({ onAddProduct }, ref) {
   }
 
   function handleSubmit() {
-    onAddProduct({ ...newProduct.current }); 
+    onAddProduct({ ...newProduct.current });
     dialog.current.close();
   }
 
@@ -38,16 +37,20 @@ const AddProductModal = forwardRef(function Modal({ onAddProduct }, ref) {
       <h2>Add New Product</h2>
       <form id="add-product-form" onSubmit={handleSubmit}>
         <label>
-            ID: <input type="text" name="id" required onChange={handleChange}/>
+          Title:{" "}
+          <input type="text" name="title" required onChange={handleChange} />
         </label>
         <label>
-          Title: <input type="text" name="title" required onChange={handleChange}/>
+          Price:{" "}
+          <input type="text" name="price" required onChange={handleChange} />
         </label>
         <label>
-          Price: <input type="text" name="price" required onChange={handleChange}/>
-        </label>
-        <label>
-          Description: <textarea name="description" required onChange={handleChange}></textarea>
+          Description:{" "}
+          <textarea
+            name="description"
+            required
+            onChange={handleChange}
+          ></textarea>
         </label>
         <menu id="modal-actions">
           <button type="button" onClick={() => dialog.current.close()}>

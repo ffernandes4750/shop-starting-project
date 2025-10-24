@@ -6,7 +6,7 @@ import { store } from "./redux/store.js";
 import App from "./App.js";
 import "./assets/css/index.css";
 
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,

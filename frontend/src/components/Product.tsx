@@ -7,7 +7,7 @@ type ProductProps = {
   name: string;
   price: number;
   description: string;
-  removeItem: (_id: string) => Promise<unknown>;
+  onRemoveItem: (_id: string) => Promise<void>;
 };
 
 export default function Product({
@@ -15,13 +15,13 @@ export default function Product({
   name,
   price,
   description,
-  removeItem,
+  onRemoveItem,
 }: ProductProps) {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
 
   async function handleRemove(_id: string) {
-    await removeItem(_id);
+    await onRemoveItem(_id);
     await queryClient.refetchQueries({ queryKey: ["products"] });
   }
 

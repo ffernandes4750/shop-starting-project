@@ -5,7 +5,7 @@ export type CartItem = {
   quantity: number;
 };
 
-export type Cart = {
+export type CartType = {
   items: CartItem[];
 };
 

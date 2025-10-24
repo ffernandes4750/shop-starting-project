@@ -2,7 +2,7 @@ import { useRef } from "react";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks.ts";
 import { updateQuantity } from "../redux/slices/cartSlice.ts";
-import CartModal from "./CartModal.tsx";
+import CartModal from "./modals/CartModal/CartModal.tsx";
 
 import type { CartModalHandle } from "../types/cart.ts";
 
@@ -10,9 +10,9 @@ export default function Header() {
   const modal = useRef<CartModalHandle | null>(null);
 
   const dispatch = useAppDispatch();
-  const items = useAppSelector((s) => s.cart.items);
+  const cart = useAppSelector((s) => s.cart);
 
-  const cartQuantity = items.length;
+  const cartQuantity = cart.items.length;
 
   function handleOpenCartClick() {
     modal.current?.open();
@@ -33,7 +33,7 @@ export default function Header() {
     <>
       <CartModal
         ref={modal}
-        cartItems={items}
+        cartItems={cart.items}
         onUpdateCartItemQuantity={(_id, change) =>
           dispatch(updateQuantity({ _id, change }))
         }

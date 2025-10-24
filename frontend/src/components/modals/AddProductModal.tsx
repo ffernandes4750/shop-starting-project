@@ -6,10 +6,11 @@ import { useForm, useFormState } from "react-hook-form";
 import type {
   NewProductType,
   AddProductModalHandle,
-} from "../types/product.ts";
+  ProductType,
+} from "../../types/product.ts";
 
 type AddProductModalProps = {
-  onAddProduct: (product: NewProductType) => Promise<unknown>;
+  onAddProduct: (product: NewProductType) => Promise<ProductType>;
 };
 
 const AddProductModal = forwardRef<AddProductModalHandle, AddProductModalProps>(

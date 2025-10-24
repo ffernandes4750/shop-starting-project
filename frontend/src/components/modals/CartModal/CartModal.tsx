@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 
 import Cart from "./Cart.tsx";
 
-import type { CartItem, CartModalHandle } from "../types/cart.ts";
+import type { CartItem, CartModalHandle } from "../../../types/cart.ts";
 
 type CartModalProps = {
   cartItems: CartItem[];
@@ -27,7 +27,10 @@ const CartModal = forwardRef<CartModalHandle, CartModalProps>(function Modal(
   return createPortal(
     <dialog id="modal" ref={dialog}>
       <h2>{title}</h2>
-      <Cart items={cartItems} onUpdateItemQuantity={onUpdateCartItemQuantity} />
+      <Cart
+        cartItems={cartItems}
+        onUpdateItemQuantity={onUpdateCartItemQuantity}
+      />
       <form method="dialog" id="modal-actions">
         {actions}
       </form>

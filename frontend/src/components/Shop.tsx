@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-import AddProductModal from "./AddProductModal.tsx";
+import AddProductModal from "./modals/AddProductModal.tsx";
 import Product from "./Product.tsx";
 
 import type {
@@ -11,14 +11,14 @@ import type {
 
 type ShopProps = {
   products: ProductType[];
-  onAddProduct: (product: NewProductType) => Promise<unknown>;
-  removeItem: (_id: string) => Promise<unknown>;
+  onAddProduct: (product: NewProductType) => Promise<ProductType>;
+  onRemoveItem: (_id: string) => Promise<void>;
 };
 
 export default function Shop({
   products,
   onAddProduct,
-  removeItem,
+  onRemoveItem,
 }: ShopProps) {
   const modal = useRef<AddProductModalHandle | null>(null);
 
@@ -39,7 +39,7 @@ export default function Shop({
         <ul id="products">
           {products.map((product) => (
             <li key={product._id}>
-              <Product {...product} removeItem={removeItem} />
+              <Product {...product} onRemoveItem={onRemoveItem} />
             </li>
           ))}
         </ul>

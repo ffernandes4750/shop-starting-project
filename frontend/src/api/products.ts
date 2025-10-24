@@ -1,20 +1,30 @@
-import { api } from "./api.js";
+import { api, handleApiError } from "./api.ts";
+import type { NewProductType, ProductType } from "../types/product.ts";
 
-import type { NewProductType } from "../types/product.js";
-
-async function fetchProducts() {
-  const { data } = await api.get("/products");
-  return data;
+async function fetchProducts(): Promise<ProductType[]> {
+  try {
+    const { data } = await api.get<ProductType[]>("/products");
+    return data;
+  } catch (error) {
+    handleApiError(error);
+  }
 }
 
-async function createProduct(newProduct: NewProductType) {
-  const { data } = await api.post("/products", newProduct);
-  return data;
+async function createProduct(newProduct: NewProductType): Promise<ProductType> {
+  try {
+    const { data } = await api.post<ProductType>("/products", newProduct);
+    return data;
+  } catch (error) {
+    handleApiError(error);
+  }
 }
 
-async function deleteProduct(productId: string) {
-  const { data } = await api.delete(`/products/${productId}`);
-  return data;
+async function deleteProduct(productId: string): Promise<void> {
+  try {
+    await api.delete(`/products/${productId}`);
+  } catch (error) {
+    handleApiError(error);
+  }
 }
 
 export { fetchProducts, createProduct, deleteProduct };

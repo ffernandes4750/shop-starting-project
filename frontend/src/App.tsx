@@ -30,7 +30,7 @@ function App() {
       <Shop
         products={products}
         onAddProduct={createProduct}
-        removeItem={deleteProduct}
+        onRemoveItem={deleteProduct}
       />
     </>
   );

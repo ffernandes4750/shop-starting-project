@@ -1,12 +1,12 @@
-import type { CartItem } from "../types/cart.ts";
+import type { CartItem } from "../../../types/cart.ts";
 
 type CartProps = {
-  items: CartItem[];
+  cartItems: CartItem[];
   onUpdateItemQuantity: (_id: string, change: number) => void;
 };
 
-export default function Cart({ items, onUpdateItemQuantity }: CartProps) {
-  const totalPrice = items.reduce(
+export default function Cart({ cartItems, onUpdateItemQuantity }: CartProps) {
+  const totalPrice = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
@@ -15,11 +15,11 @@ export default function Cart({ items, onUpdateItemQuantity }: CartProps) {
 
   return (
     <div id="cart">
-      {items.length === 0 && <p>No items in cart!</p>}
+      {cartItems.length === 0 && <p>No items in cart!</p>}
 
-      {items.length > 0 && (
+      {cartItems.length > 0 && (
         <ul id="cart-items">
-          {items.map((item) => {
+          {cartItems.map((item) => {
             const formattedPrice = `$${item.price.toFixed(2)}`;
 
             return (

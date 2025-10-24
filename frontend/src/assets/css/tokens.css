@@ -1,0 +1,42 @@
+/* variáveis (cores, espaçamentos, fontes) */
+
+:root {
+  /* Cores */
+  --bg-grad-top: #31220b;
+  --bg-grad-bot: #382e1b;
+
+  --text-primary: #f3e7d4;
+  --text-accent: #edbf68;
+  --text-muted: #a59b8b;
+
+  --card-bg: #5f4e33;
+  --card-head: #fbd392;
+  --card-sub: #d1b68b;
+
+  --btn-primary-bg: #f4b115;
+  --btn-primary-bg-hover: #f5b744;
+  --btn-dark-bg: #201e1a;
+  --btn-dark-bg-hover: #382e1b;
+  --btn-dark-text: #f9efda;
+
+  --modal-bg: #d3b17b;
+  --modal-title: #4f3807;
+  --input-bg: #f6e5c7;
+  --input-bg-focus: #fff1d4;
+  --input-ring: #8a6b2d;
+
+  /* Espaçamentos e raios */
+  --radius: 6px;
+  --gap-xs: 0.5rem;
+  --gap-sm: 0.75rem;
+  --gap: 1rem;
+  --gap-lg: 1.25rem;
+  --pad-btn-y: 0.5rem;
+  --pad-btn-x: 1rem;
+
+  /* Tipografia */
+  --ff-base: "Merriweather", serif;
+  --fs-h1: 2.5rem;
+  --fs-h2: 1.5rem;
+  --fs-base: 1rem;
+}

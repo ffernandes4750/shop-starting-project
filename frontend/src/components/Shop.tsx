@@ -10,16 +10,14 @@ import type {
 } from "../types/product.ts";
 
 type ShopProps = {
-  onAddItemToCart: (_id: string) => void;
-  onAddProduct: (product: NewProductType) => void;
   products: ProductType[];
-  removeItem: (_id: string) => void;
+  onAddProduct: (product: NewProductType) => Promise<unknown>;
+  removeItem: (_id: string) => Promise<unknown>;
 };
 
 export default function Shop({
-  onAddItemToCart,
-  onAddProduct,
   products,
+  onAddProduct,
   removeItem,
 }: ShopProps) {
   const modal = useRef<AddProductModalHandle | null>(null);
@@ -41,11 +39,7 @@ export default function Shop({
         <ul id="products">
           {products.map((product) => (
             <li key={product._id}>
-              <Product
-                {...product}
-                onAddItemToCart={onAddItemToCart}
-                removeItem={removeItem}
-              />
+              <Product {...product} removeItem={removeItem} />
             </li>
           ))}
         </ul>

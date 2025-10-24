@@ -1,83 +1,121 @@
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useForm, useFormState } from "react-hook-form";
 
 import type {
   NewProductType,
   AddProductModalHandle,
 } from "../types/product.ts";
 
-// Tipo das props do modal
 type AddProductModalProps = {
-  onAddProduct: (product: NewProductType) => void;
+  onAddProduct: (product: NewProductType) => Promise<unknown>;
 };
 
-// Componente principal com forwardRef
 const AddProductModal = forwardRef<AddProductModalHandle, AddProductModalProps>(
   function Modal({ onAddProduct }, ref) {
-    // O dialog HTML
     const dialog = useRef<HTMLDialogElement | null>(null);
+    const queryClient = useQueryClient();
 
-    // Expor o método open() ao componente pai
-    useImperativeHandle(ref, () => ({
-      open() {
-        dialog.current?.showModal();
+    // ---------------- React Hook Form ----------------
+    const { register, handleSubmit, reset, control } = useForm<NewProductType>({
+      defaultValues: {
+        name: "",
+        price: 0,
+        description: "",
       },
-    }));
-
-    // Objeto temporário do novo produto
-    const newProduct = useRef<NewProductType>({
-      title: "",
-      price: 0,
-      description: "",
+      mode: "onSubmit",
     });
 
-    // Atualizar campos do formulário
-    function handleChange(
-      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) {
-      const { name, value } = event.target;
-      const key = name as keyof NewProductType;
+    // Lê só partes do formState (evita re-renders desnecessários)
+    const { errors, isSubmitting } = useFormState({ control });
 
-      if (key === "price") {
-        newProduct.current[key] = parseFloat(value.replace(",", "."));
-      } else {
-        newProduct.current[key] = value;
-      }
-    }
+    useImperativeHandle(
+      ref,
+      () => ({
+        open() {
+          reset({
+            name: "",
+            price: 0,
+            description: "",
+          });
+          dialog.current?.showModal();
+        },
+      }),
+      [reset]
+    );
 
-    // Submeter formulário
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-      event.preventDefault();
-      onAddProduct({ ...newProduct.current });
+    const closeDialog = useCallback(() => {
       dialog.current?.close();
-    }
+      reset({
+        name: "",
+        price: 0,
+        description: "",
+      });
+    }, [reset]);
 
-    // Criar portal do modal
+    const onSubmit = useCallback(
+      async (data: NewProductType) => {
+        await onAddProduct(data);
+        await queryClient.refetchQueries({ queryKey: ["products"] });
+        closeDialog();
+      },
+      [onAddProduct, queryClient, closeDialog]
+    );
+
     return createPortal(
       <dialog id="modal" ref={dialog}>
         <h2>Add New Product</h2>
-        <form id="add-product-form" onSubmit={handleSubmit}>
+
+        <form id="add-product-form" onSubmit={handleSubmit(onSubmit)}>
           <label>
-            Title:{" "}
-            <input type="text" name="title" required onChange={handleChange} />
+            Name:{" "}
+            <input
+              type="text"
+              {...register("name", { required: "Name is required" })}
+              placeholder="Name"
+            />
           </label>
+          {errors.name && <span>{errors.name.message}</span>}
+
           <label>
             Price:{" "}
-            <input type="text" name="price" required onChange={handleChange} />
+            <input
+              type="text"
+              // Aceita vírgulas e converte para número
+              {...register("price", {
+                required: "Price is required",
+                setValueAs: (v) => {
+                  if (typeof v === "number") return v;
+                  const parsed = parseFloat(String(v).replace(",", "."));
+                  return Number.isNaN(parsed) ? 0 : parsed;
+                },
+                validate: (v) =>
+                  (typeof v === "number" && v > 0) || "Price must be > 0",
+              })}
+              placeholder="0.00"
+            />
           </label>
+          {errors.price && <span>{errors.price.message as string}</span>}
+
           <label>
             Description:{" "}
             <textarea
-              name="description"
-              required
-              onChange={handleChange}
-            ></textarea>
+              {...register("description", {
+                required: "Description is required",
+              })}
+              placeholder="Description"
+            />
           </label>
+          {errors.description && <span>{errors.description.message}</span>}
+
           <menu id="modal-actions">
-            <button type="button" onClick={() => dialog.current?.close()}>
+            <button type="button" onClick={closeDialog}>
               Cancel
             </button>
-            <button type="submit">Add Product</button>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Adding..." : "Add Product"}
+            </button>
           </menu>
         </form>
       </dialog>,

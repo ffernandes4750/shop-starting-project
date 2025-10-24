@@ -1,12 +1,12 @@
 export type ProductType = {
   _id: string;
-  title: string;
+  name: string;
   price: number;
   description: string;
 };
 
 export type NewProductType = {
-  title: string;
+  name: string;
   price: number;
   description: string;
 };

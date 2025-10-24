@@ -1,0 +1,29 @@
+/* reset leve + elementos base (body, h1, etc.) */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--ff-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(var(--bg-grad-top), var(--bg-grad-bot));
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--text-accent);
+  text-shadow: 0 0 4px rgba(35, 34, 34, 0.4);
+  font-size: var(--fs-h1);
+  margin: 0;
+}

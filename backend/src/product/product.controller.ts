@@ -31,7 +31,7 @@ export class ProductsController {
   }
 
   // POST /products
-  // Body esperado: { "title": "...", "price": 123.45, "description": "..." }
+  // Body esperado: { "name": "...", "price": 123.45, "description": "..." }
   @Post()
   async create(@Body() dto: CreateProductDto): Promise<Product> {
     return this.productsService.create(dto);

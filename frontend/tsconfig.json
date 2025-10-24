@@ -43,6 +43,8 @@
 
     // My additions
     "noEmit": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true
   }
 }

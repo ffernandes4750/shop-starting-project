@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 export class CreateProductDto {
   @IsString()
   @MinLength(3)
-  title!: string;
+  name!: string;
 
   @Type(() => Number)
   @IsNumber()

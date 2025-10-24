@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from './product.service';
 import { Product } from './schema/product.schema';
-import { IdParamDto } from './DTOs/id-param.dto';
 import { CreateProductDto } from './DTOs/create-product.dto';
 import { UpdateProductDto } from './DTOs/update-product.dto';
+import { ParseObjectIdPipe } from '@nestjs/mongoose';
 
 @Controller('products')
 export class ProductsController {
@@ -26,7 +26,7 @@ export class ProductsController {
 
   // GET /products/:id
   @Get(':id')
-  async findOne(@Param() { id }: IdParamDto): Promise<Product> {
+  async findOne(@Param('id', ParseObjectIdPipe) id: string): Promise<Product> {
     return this.productsService.findOne(id);
   }
 
@@ -40,7 +40,7 @@ export class ProductsController {
   // PATCH /products/:id
   @Patch(':id')
   async update(
-    @Param() { id }: IdParamDto,
+    @Param('id', ParseObjectIdPipe) id: string,
     @Body() dto: UpdateProductDto,
   ): Promise<Product> {
     return this.productsService.update(id, dto);
@@ -49,7 +49,7 @@ export class ProductsController {
   // DELETE /products/:id
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param() { id }: IdParamDto): Promise<void> {
+  async remove(@Param('id', ParseObjectIdPipe) id: string): Promise<void> {
     await this.productsService.delete(id);
   }
 }

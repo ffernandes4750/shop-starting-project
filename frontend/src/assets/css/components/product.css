@@ -1,0 +1,19 @@
+/* Cartões de produto (Product.tsx) */
+/* usa .shadow-soft e .rounded-soft já existentes no JSX */
+/* :contentReference[oaicite:2]{index=2} */
+#shop .card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+#shop .card-title {
+  margin-bottom: 0.25rem;
+}
+
+#shop .text-muted {
+  color: var(--color-muted) !important;
+}
+
+#shop .card .btn {
+  min-width: 6rem;
+}

@@ -1,42 +1,48 @@
-import { forwardRef, useImperativeHandle, useRef } from "react";
-import { createPortal } from "react-dom";
+import { Modal, Button } from "react-bootstrap";
+import { forwardRef, useImperativeHandle, useState, useCallback } from "react";
 
 import Cart from "./Cart.tsx";
 
-import type { CartItem, CartModalHandle } from "../../../types/cart.ts";
+import type { CartItem } from "../../../types/cart.ts";
 
 type CartModalProps = {
+  show: boolean;
+  onHide: () => void;
   cartItems: CartItem[];
   onUpdateCartItemQuantity: (_id: string, change: number) => void;
   title: string;
-  actions: React.ReactNode;
 };
 
-const CartModal = forwardRef<CartModalHandle, CartModalProps>(function Modal(
-  { cartItems, onUpdateCartItemQuantity, title, actions },
-  ref
-) {
-  const dialog = useRef<HTMLDialogElement | null>(null);
+export default function CartModal({
+  show,
+  onHide,
+  cartItems,
+  onUpdateCartItemQuantity,
+  title,
+}: CartModalProps) {
+  const hasItems = cartItems.length > 0;
 
-  useImperativeHandle(ref, () => ({
-    open() {
-      dialog.current?.showModal();
-    },
-  }));
+  return (
+    <Modal show={show} onHide={onHide} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
 
-  return createPortal(
-    <dialog id="modal" ref={dialog}>
-      <h2>{title}</h2>
-      <Cart
-        cartItems={cartItems}
-        onUpdateItemQuantity={onUpdateCartItemQuantity}
-      />
-      <form method="dialog" id="modal-actions">
-        {actions}
-      </form>
-    </dialog>,
-    document.getElementById("modal") as HTMLElement
+      <Modal.Body>
+        <Cart
+          cartItems={cartItems}
+          onUpdateItemQuantity={onUpdateCartItemQuantity}
+        />
+      </Modal.Body>
+
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onHide}>
+          Close
+        </Button>
+        <Button variant="success" disabled={!hasItems} onClick={onHide}>
+          Checkout
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
-});
-
-export default CartModal;
+}

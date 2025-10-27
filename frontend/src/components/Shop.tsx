@@ -1,13 +1,10 @@
-import { useRef } from "react";
+import { Container, Row, Col, Button } from "react-bootstrap";
+import { useState } from "react";
 
 import AddProductModal from "./modals/AddProductModal.tsx";
 import Product from "./Product.tsx";
 
-import type {
-  ProductType,
-  NewProductType,
-  AddProductModalHandle,
-} from "../types/product.ts";
+import type { ProductType, NewProductType } from "../types/product.ts";
 
 type ShopProps = {
   products: ProductType[];
@@ -20,29 +17,31 @@ export default function Shop({
   onAddProduct,
   onRemoveItem,
 }: ShopProps) {
-  const modal = useRef<AddProductModalHandle | null>(null);
-
-  function handleAddProductClick() {
-    modal.current?.open();
-  }
+  const [showAdd, setShowAdd] = useState(false);
 
   return (
     <>
-      <AddProductModal ref={modal} onAddProduct={onAddProduct} />
-      <section id="shop">
-        <h2>Elegant Clothing For Everyone</h2>
+      <AddProductModal
+        show={showAdd}
+        onHide={() => setShowAdd(false)}
+        onAddProduct={onAddProduct}
+      />
 
-        <p className="product-add">
-          <button onClick={handleAddProductClick}>Add Product</button>
-        </p>
+      <section id="shop" className="py-4">
+        <Container>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2 className="h4 m-0">Elegant Clothing For Everyone</h2>
+            <Button onClick={() => setShowAdd(true)}>Add Product</Button>
+          </div>
 
-        <ul id="products">
-          {products.map((product) => (
-            <li key={product._id}>
-              <Product {...product} onRemoveItem={onRemoveItem} />
-            </li>
-          ))}
-        </ul>
+          <Row xs={1} md={2} lg={3} className="g-4">
+            {products.map((p) => (
+              <Col key={p._id}>
+                <Product {...p} onRemoveItem={onRemoveItem} />
+              </Col>
+            ))}
+          </Row>
+        </Container>
       </section>
     </>
   );

@@ -1,45 +1,9 @@
-#modal {
-  width: min(600px, 90%);
-  background: var(--modal-bg);
-  border: none;
-  border-radius: var(--radius);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  animation: fade-slide-in-from-top 0.3s ease-in-out;
+/* Aspeto geral de Modals (AddProductModal, CartModal) */
+/*  */
+.modal-content {
+  border-radius: var(--radius-soft);
 }
-#modal::backdrop {
-  background: rgba(0, 0, 0, 0.65);
-}
-
-#modal h2 {
-  font-size: var(--fs-h2);
-  color: var(--modal-title);
-  text-transform: uppercase;
-  margin: 0;
-}
-
-#modal form {
-  display: flex;
-  gap: var(--gap);
-  justify-content: flex-end;
-}
-#modal form button {
-  background: transparent;
-  border: none;
-  border-radius: var(--radius);
-  color: #201e1a;
-  cursor: pointer;
-  font-size: 1.1rem;
-}
-#modal form button:hover {
-  color: #453719;
-}
-
-#modal form button:last-of-type {
-  background: #271e07;
-  color: var(--btn-dark-text);
-  padding: var(--pad-btn-y) var(--pad-btn-x);
-  font-size: 1rem;
-}
-#modal form button:last-of-type:hover {
-  background: var(--btn-dark-bg-hover);
+.modal-header,
+.modal-footer {
+  border-color: var(--color-border);
 }

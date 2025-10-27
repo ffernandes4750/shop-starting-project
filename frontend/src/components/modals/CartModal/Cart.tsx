@@ -14,11 +14,11 @@ export default function Cart({ cartItems, onUpdateItemQuantity }: CartProps) {
   const formattedTotalPrice = `$${totalPrice.toFixed(2)}`;
 
   return (
-    <div id="cart">
+    <div>
       {cartItems.length === 0 && <p>No items in cart!</p>}
 
       {cartItems.length > 0 && (
-        <ul id="cart-items">
+        <ul>
           {cartItems.map((item) => {
             const formattedPrice = `$${item.price.toFixed(2)}`;
 
@@ -28,7 +28,7 @@ export default function Cart({ cartItems, onUpdateItemQuantity }: CartProps) {
                   <span>{item.name}</span>
                   <span> ({formattedPrice})</span>
                 </div>
-                <div className="cart-item-actions">
+                <div>
                   <button onClick={() => onUpdateItemQuantity(item._id, -1)}>
                     -
                   </button>
@@ -43,7 +43,7 @@ export default function Cart({ cartItems, onUpdateItemQuantity }: CartProps) {
         </ul>
       )}
 
-      <p id="cart-total-price">
+      <p className="mt-3">
         Cart Total: <strong>{formattedTotalPrice}</strong>
       </p>
     </div>

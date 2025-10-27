@@ -1,0 +1,8 @@
+/* Secção da loja (Shop.tsx) — mantém tudo simples e coerente */
+/* :contentReference[oaicite:3]{index=3} */
+#shop {
+  background: transparent;
+}
+#shop .d-flex > h2 {
+  letter-spacing: 0.2px;
+}

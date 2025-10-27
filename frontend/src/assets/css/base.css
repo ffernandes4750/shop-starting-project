@@ -1,29 +1,54 @@
-/* reset leve + elementos base (body, h1, etc.) */
-
 * {
   box-sizing: border-box;
 }
 
 html,
-body {
-  min-height: 100%;
+body,
+#root {
+  height: 100%;
 }
 
 body {
   margin: 0;
-  font-family: var(--ff-base);
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: var(--theme-transition);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(var(--bg-grad-top), var(--bg-grad-bot));
-  color: var(--text-primary);
-  min-height: 100vh;
 }
 
-h1 {
-  text-align: center;
-  text-transform: uppercase;
-  color: var(--text-accent);
-  text-shadow: 0 0 4px rgba(35, 34, 34, 0.4);
-  font-size: var(--fs-h1);
-  margin: 0;
+.card,
+.modal-content,
+.navbar,
+.dropdown-menu {
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: var(--theme-transition);
+}
+
+.border,
+.modal-header,
+.modal-footer,
+.navbar,
+.dropdown-menu,
+.card {
+  border-color: var(--color-border) !important;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
 }

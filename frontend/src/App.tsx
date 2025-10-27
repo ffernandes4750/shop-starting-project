@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-
 import { fetchProducts, createProduct, deleteProduct } from "./api/products.ts";
+
 import Header from "./components/Header.tsx";
 import Shop from "./components/Shop.tsx";
 

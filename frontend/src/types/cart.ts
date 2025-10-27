@@ -8,7 +8,3 @@ export type CartItem = {
 export type CartType = {
   items: CartItem[];
 };
-
-export type CartModalHandle = {
-  open: () => void;
-};

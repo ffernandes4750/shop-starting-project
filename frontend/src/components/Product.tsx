@@ -1,4 +1,6 @@
+import { Card, Button } from "react-bootstrap";
 import { useQueryClient } from "@tanstack/react-query";
+
 import { useAppDispatch } from "../redux/hooks.ts";
 import { addItem } from "../redux/slices/cartSlice.ts";
 
@@ -20,28 +22,31 @@ export default function Product({
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
 
-  async function handleRemove(_id: string) {
-    await onRemoveItem(_id);
+  async function handleRemove(id: string) {
+    await onRemoveItem(id);
     await queryClient.refetchQueries({ queryKey: ["products"] });
   }
 
   return (
-    <article className="product">
-      <div className="product-content">
-        <div>
-          <h3>{name}</h3>
-          <p className="product-price">${price.toFixed(2)}</p>
-          <p>{description}</p>
+    <Card className="h-100 shadow-soft rounded-soft">
+      <Card.Body className="d-flex flex-column">
+        <div className="mb-3">
+          <Card.Title>{name}</Card.Title>
+          <div className="text-muted mb-2">€{price.toFixed(2)}</div>
+          <Card.Text>{description}</Card.Text>
         </div>
-        <p className="product-actions">
-          <button id="remove-product-button" onClick={() => handleRemove(_id)}>
+        <div className="mt-auto d-flex gap-2">
+          <Button variant="outline-danger" onClick={() => handleRemove(_id)}>
             Remove
-          </button>
-          <button onClick={() => dispatch(addItem({ _id, name, price }))}>
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => dispatch(addItem({ _id, name, price }))}
+          >
             Add to Cart
-          </button>
-        </p>
-      </div>
-    </article>
+          </Button>
+        </div>
+      </Card.Body>
+    </Card>
   );
 }

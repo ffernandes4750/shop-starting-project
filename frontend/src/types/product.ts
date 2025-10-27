@@ -10,7 +10,3 @@ export type NewProductType = {
   price: number;
   description: string;
 };
-
-export type AddProductModalHandle = {
-  open: () => void;
-};

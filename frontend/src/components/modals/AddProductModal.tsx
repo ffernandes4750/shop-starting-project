@@ -1,128 +1,141 @@
-import { forwardRef, useImperativeHandle, useRef, useCallback } from "react";
-import { createPortal } from "react-dom";
+import { Modal, Button, Form, InputGroup, Spinner } from "react-bootstrap";
+import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useForm, useFormState } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-import type {
-  NewProductType,
-  AddProductModalHandle,
-  ProductType,
-} from "../../types/product.ts";
+import {
+  newProductSchema,
+  type NewProductSchema,
+} from "../../validation/productSchemas.ts";
+
+import type { ProductType } from "../../types/product.ts";
 
 type AddProductModalProps = {
-  onAddProduct: (product: NewProductType) => Promise<ProductType>;
+  show: boolean;
+  onHide: () => void;
+  onAddProduct: (product: NewProductSchema) => Promise<ProductType>;
 };
 
-const AddProductModal = forwardRef<AddProductModalHandle, AddProductModalProps>(
-  function Modal({ onAddProduct }, ref) {
-    const dialog = useRef<HTMLDialogElement | null>(null);
-    const queryClient = useQueryClient();
+export default function AddProductModal({
+  show,
+  onHide,
+  onAddProduct,
+}: AddProductModalProps) {
+  const queryClient = useQueryClient();
 
-    // ---------------- React Hook Form ----------------
-    const { register, handleSubmit, reset, control } = useForm<NewProductType>({
-      defaultValues: {
-        name: "",
-        price: 0,
-        description: "",
-      },
-      mode: "onSubmit",
-    });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<NewProductSchema>({
+    defaultValues: { name: "", price: 0, description: "" },
+    mode: "onSubmit",
+    resolver: yupResolver(newProductSchema),
+  });
 
-    // Lê só partes do formState (evita re-renders desnecessários)
-    const { errors, isSubmitting } = useFormState({ control });
+  const close = useCallback(() => {
+    onHide();
+    reset({ name: "", price: 0, description: "" });
+  }, [onHide, reset]);
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        open() {
-          reset({
-            name: "",
-            price: 0,
-            description: "",
-          });
-          dialog.current?.showModal();
-        },
-      }),
-      [reset]
-    );
-
-    const closeDialog = useCallback(() => {
-      dialog.current?.close();
-      reset({
-        name: "",
-        price: 0,
-        description: "",
-      });
-    }, [reset]);
-
-    const onSubmit = useCallback(
-      async (data: NewProductType) => {
+  const onSubmit = useCallback(
+    async (data: NewProductSchema) => {
+      try {
         await onAddProduct(data);
         await queryClient.refetchQueries({ queryKey: ["products"] });
-        closeDialog();
-      },
-      [onAddProduct, queryClient, closeDialog]
-    );
+        close(); // fecha após sucesso
+      } catch (e: any) {
+        setError("root", {
+          type: "server",
+          message: e?.message ?? "Erro ao adicionar produto",
+        });
+      }
+    },
+    [onAddProduct, queryClient, close, setError]
+  );
 
-    return createPortal(
-      <dialog id="modal" ref={dialog}>
-        <h2>Add New Product</h2>
+  return (
+    <Modal show={show} onHide={close} centered backdrop="static">
+      <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Product</Modal.Title>
+        </Modal.Header>
 
-        <form id="add-product-form" onSubmit={handleSubmit(onSubmit)}>
-          <label>
-            Name:{" "}
-            <input
+        <Modal.Body className="d-flex flex-column gap-3">
+          {errors.root?.message && (
+            <div className="text-danger small">{errors.root.message}</div>
+          )}
+
+          <Form.Group controlId="name">
+            <Form.Label>Name</Form.Label>
+            <Form.Control
               type="text"
-              {...register("name", { required: "Name is required" })}
               placeholder="Name"
+              autoComplete="off"
+              isInvalid={!!errors.name}
+              {...register("name")}
             />
-          </label>
-          {errors.name && <span>{errors.name.message}</span>}
+            <Form.Control.Feedback type="invalid">
+              {errors.name?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
 
-          <label>
-            Price:{" "}
-            <input
-              type="text"
-              // Aceita vírgulas e converte para número
-              {...register("price", {
-                required: "Price is required",
-                setValueAs: (v) => {
-                  if (typeof v === "number") return v;
-                  const parsed = parseFloat(String(v).replace(",", "."));
-                  return Number.isNaN(parsed) ? 0 : parsed;
-                },
-                validate: (v) =>
-                  (typeof v === "number" && v > 0) || "Price must be > 0",
-              })}
-              placeholder="0.00"
-            />
-          </label>
-          {errors.price && <span>{errors.price.message as string}</span>}
+          <Form.Group controlId="price">
+            <Form.Label>Price</Form.Label>
+            <InputGroup>
+              <InputGroup.Text>€</InputGroup.Text>
+              <Form.Control
+                type="text"
+                placeholder="0,00"
+                inputMode="decimal"
+                autoComplete="off"
+                isInvalid={!!errors.price}
+                {...register("price")}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.price?.message}
+              </Form.Control.Feedback>
+            </InputGroup>
+          </Form.Group>
 
-          <label>
-            Description:{" "}
-            <textarea
-              {...register("description", {
-                required: "Description is required",
-              })}
+          <Form.Group controlId="description">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
               placeholder="Description"
+              isInvalid={!!errors.description}
+              {...register("description")}
             />
-          </label>
-          {errors.description && <span>{errors.description.message}</span>}
+            <Form.Control.Feedback type="invalid">
+              {errors.description?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Modal.Body>
 
-          <menu id="modal-actions">
-            <button type="button" onClick={closeDialog}>
-              Cancel
-            </button>
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Adding..." : "Add Product"}
-            </button>
-          </menu>
-        </form>
-      </dialog>,
-      document.getElementById("modal") as HTMLElement // garante que não é null
-    );
-  }
-);
-
-export default AddProductModal;
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={close}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Spinner size="sm" className="me-2" /> Adding...
+              </>
+            ) : (
+              "Add Product"
+            )}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
+}

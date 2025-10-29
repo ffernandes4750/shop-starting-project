@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ProductModule } from './product/product.module';
+import { ProductModule } from './products/products.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
 
     MongooseModule.forRoot(process.env.MONGO_URI!, {
@@ -24,8 +27,17 @@ import { Connection } from 'mongoose';
     }),
 
     ProductModule,
+
+    UsersModule,
+
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(cfg: ConfigService) {
+    console.log('DEBUG MONGO_URI =', cfg.get('MONGO_URI'));
+    console.log('DEBUG JWT_ACCESS_SECRET =', cfg.get('JWT_ACCESS_SECRET'));
+  }
+}

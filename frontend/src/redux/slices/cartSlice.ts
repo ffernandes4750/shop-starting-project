@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import type { CartType } from "../../types/cart.ts";
 
-const initialState: CartType = {
+export const initialState: CartType = {
   items: [],
 };
 

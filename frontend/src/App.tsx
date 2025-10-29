@@ -1,38 +1,23 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchProducts, createProduct, deleteProduct } from "./api/products.ts";
-
-import Header from "./components/Header.tsx";
-import Shop from "./components/Shop.tsx";
-
-import type { ProductType } from "./types/product.ts";
+import { useEffect } from "react";
+import { useAppSelector } from "./redux/hooks.ts";
+import { useHydrateSession } from "./features/auth/useHydrateSession.ts";
+import HomePage from "./screens/homePage/HomePage.tsx";
+import LoginPage from "./screens/LoginPage.tsx";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
-  const {
-    data: products = [],
-    isLoading,
-    isError,
-    error,
-    isFetching,
-  } = useQuery<ProductType[], Error>({
-    queryKey: ["products"],
-    queryFn: fetchProducts,
-  });
+  const theme = useAppSelector((s) => s.config.theme);
+  useHydrateSession();
 
-  let message: React.ReactNode = null;
-  if (isLoading) message = <p>A carregar produtos…</p>;
-  if (isFetching) message = <p>A atualizar produtos…</p>;
-  if (isError) message = <p>Erro a obter produtos: {error.message}</p>;
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   return (
-    <>
-      <Header />
-      {message}
-      <Shop
-        products={products}
-        onAddProduct={createProduct}
-        onRemoveItem={deleteProduct}
-      />
-    </>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+    </Routes>
   );
 }
 

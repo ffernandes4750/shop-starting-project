@@ -37,3 +37,18 @@
 .text-muted-soft {
   color: var(--color-muted) !important;
 }
+
+.icon-btn {
+  color: black;
+  background-color: transparent;
+  margin-left: 50px;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: background 0.2s;
+}
+
+.icon-btn svg {
+  width: 28px;
+  height: 28px;
+}

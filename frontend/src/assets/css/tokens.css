@@ -21,8 +21,8 @@
 
 /* DARK THEME (ativado com <html data-theme="dark">) */
 :root[data-theme="dark"] {
-  --color-bg: #0f1216;
-  --color-surface: #151a20;
+  --color-bg: #1d232a;
+  --color-surface: #29323e;
   --color-text: #e7e9ed;
   --color-muted: #98a2b3;
   --color-border: #273043;

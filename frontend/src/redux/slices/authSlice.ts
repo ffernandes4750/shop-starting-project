@@ -1,18 +1,32 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AuthUser } from "../../api/auth.ts";
+import type { User } from "../../types/user.ts";
 
-export type AuthState = { user: AuthUser | null };
-const initialState: AuthState = { user: null };
+// --- Estado inicial ---
+export type AuthState = {
+  user: User | null;
+};
 
+const initialState: AuthState = {
+  user: null,
+};
+
+// --- Slice ---
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<AuthUser | null>) {
+    // Define ou atualiza o utilizador autenticado
+    setUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
+    },
+
+    // Limpa o utilizador (logout, token expirado, ...)
+    clearUser(state) {
+      state.user = null;
     },
   },
 });
 
-export const { setUser } = authSlice.actions;
+// --- Exports ---
+export const { setUser, clearUser } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,12 +1,13 @@
 import { Navbar, Container, Button } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks.ts";
 import { updateQuantity } from "../../../redux/slices/cartSlice.ts";
-import { setUser } from "../../../redux/slices/authSlice.ts";
+import { clearUser } from "../../../redux/slices/authSlice.ts";
 import CartModal from "./modals/cartModal/CartModal.tsx";
 import { useNavigate } from "react-router-dom";
 import { toggleTheme } from "../../../redux/slices/configSlice.ts";
+import { logout } from "../../../api/auth.ts";
 
 import { VscAccount } from "react-icons/vsc";
 import { BsCart2 } from "react-icons/bs";
@@ -22,17 +23,23 @@ export default function Header() {
 
   // -------------------------------- THEME CODE ----------------------------------
   const theme = useAppSelector((s) => s.config.theme);
-
-  const handleToggleTheme = () => {
-    dispatch(toggleTheme());
-  };
+  const handleToggleTheme = () => dispatch(toggleTheme());
   // --------------------------------     X     -----------------------------------
 
-  function handleLogout() {
-    localStorage.removeItem("accessToken");
-    dispatch(setUser(null));
-    navigate("/login");
-  }
+  const isLoggingOut = useRef(false);
+  const handleLogout = useCallback(async () => {
+    if (isLoggingOut.current) return;
+    isLoggingOut.current = true;
+    try {
+      await logout();
+      dispatch(clearUser());
+      navigate("/login");
+    } catch (err) {
+      console.error("Erro ao terminar sessão:", err);
+    } finally {
+      isLoggingOut.current = false;
+    }
+  }, [dispatch, navigate]);
 
   return (
     <>
@@ -66,6 +73,7 @@ export default function Header() {
             <Button className="icon-btn" onClick={() => setShowCart(true)}>
               <BsCart2 /> ({cart.items.length})
             </Button>
+
             {user ? (
               <>
                 <span className="me-2">
@@ -76,6 +84,7 @@ export default function Header() {
                   variant="outline-secondary"
                   onClick={handleLogout}
                   title="Sair"
+                  disabled={isLoggingOut.current}
                 >
                   Sair
                 </Button>

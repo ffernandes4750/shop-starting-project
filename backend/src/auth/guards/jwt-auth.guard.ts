@@ -26,17 +26,27 @@ export class JwtAuthGuard implements CanActivate {
   constructor(private readonly auth: AuthService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req: Request = context.switchToHttp().getRequest();
+    const req = context.switchToHttp().getRequest<Request>();
 
-    const authHeader = req.header('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Missing Bearer token');
+    // 1) tentar cookie
+    let token = req.cookies?.accessToken;
+
+    // 2) fallback: Authorization: Bearer <token>
+    if (!token) {
+      const authHeader = req.headers['authorization'];
+      if (authHeader?.startsWith('Bearer ')) {
+        token = authHeader.slice('Bearer '.length).trim();
+      }
     }
 
-    const token = authHeader.slice('Bearer '.length).trim();
+    if (!token) {
+      throw new UnauthorizedException('Missing access token');
+    }
+
     try {
       const payload = await this.auth.verifyToken(token);
-      req.user = payload as JwtUser;
+      // Disponibilizar o utilizador para os handlers
+      (req as any).user = payload as JwtUser;
       return true;
     } catch {
       throw new UnauthorizedException('Invalid or expired token');

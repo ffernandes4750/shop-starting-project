@@ -2,47 +2,144 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
   HttpCode,
   Post,
-  UsePipes,
-  ValidationPipe,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { UsersService } from '../users/users.service';
+import {
+  ApiCookieAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+  ApiBadRequestResponse,
+  ApiNoContentResponse,
+  ApiBody,
+} from '@nestjs/swagger';
+import type { Response, Request } from 'express';
 
+import { LoginDto } from './dto/login.dto';
+import { AuthService } from './auth.service';
+
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private auth: AuthService,
-    private users: UsersService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @HttpCode(200)
   @Post('login')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async login(@Body() dto: LoginDto) {
-    return this.auth.loginWithEmailPassword(dto.email, dto.password);
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Autenticar utilizador' })
+  @ApiBody({ type: LoginDto })
+  @ApiOkResponse({
+    description: 'Autenticado com sucesso; cookie httpOnly é definido',
+    schema: {
+      example: {
+        user: {
+          id: '6716a2e3bcd1234abcd56789',
+          name: 'Admin',
+          email: 'admin@example.com',
+          role: 'admin',
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Pedido inválido (por ex., payload mal formatado)',
+    schema: {
+      example: {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: ['email must be an email'],
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Credenciais inválidas',
+    schema: {
+      example: {
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'Invalid credentials',
+      },
+    },
+  })
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, user } = await this.authService.loginWithEmailPassword(
+      dto.email,
+      dto.password,
+    );
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60, // 1h
+    });
+
+    return { user };
   }
 
-  // FEITO DE UMA MANEIRA PARA DEBUG (EM VEZ DE DAR ERROS E PARAR A EXECUÇÃO RETORNAS NULOS)
   @Get('me')
-  async me(@Headers('authorization') authHeader?: string) {
-    if (!authHeader?.startsWith('Bearer ')) {
-      return { user: null };
-    }
-    const token = authHeader.slice('Bearer '.length);
-    const payload = await this.auth.verifyToken(token);
-    const user = await this.users.findByEmail(payload.email);
-    if (!user) return { user: null };
-    return {
-      user: {
-        id: String(user._id),
-        name: user.name,
-        email: user.email,
-        role: user.role,
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Obter utilizador autenticado (via cookie JWT)' })
+  @ApiCookieAuth('accessToken')
+  @ApiOkResponse({
+    description: 'Utilizador autenticado',
+    schema: {
+      example: {
+        user: {
+          id: '6716a2e3bcd1234abcd56789',
+          name: 'Admin',
+          email: 'admin@example.com',
+          role: 'admin',
+        },
       },
-    };
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Não autenticado (cookie ausente ou inválido)',
+    schema: {
+      example: {
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'Unauthorized',
+      },
+    },
+  })
+  async me(@Req() req: Request) {
+    return { user: (req as any).user };
+  }
+
+  @Post('logout')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Terminar sessão (limpar cookie JWT)' })
+  @ApiCookieAuth('accessToken')
+  @ApiNoContentResponse({ description: 'Sessão terminada' })
+  @ApiUnauthorizedResponse({
+    description: 'Não autenticado',
+    schema: {
+      example: {
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'Unauthorized',
+      },
+    },
+  })
+  async logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
   }
 }

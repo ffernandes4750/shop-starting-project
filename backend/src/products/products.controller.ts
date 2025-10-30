@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -22,7 +21,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
   ApiNoContentResponse,
-  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
 
 import { CreateProductDto } from './dto/create-product.dto';

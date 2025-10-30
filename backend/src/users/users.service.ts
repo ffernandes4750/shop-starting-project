@@ -11,6 +11,7 @@ export class UsersService {
     return this.userModel.findOne({ email: email.toLowerCase() }).exec();
   }
 
+  // NAO É USADO
   async createUser(params: {
     email: string;
     name: string;

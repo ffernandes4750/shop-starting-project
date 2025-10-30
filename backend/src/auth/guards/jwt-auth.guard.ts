@@ -6,20 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from '../auth.service';
-
-export type JwtUser = {
-  sub: string;
-  email: string;
-  role: 'admin' | 'user';
-  iat?: number;
-  exp?: number;
-};
-
-declare module 'express-serve-static-core' {
-  interface Request {
-    user?: JwtUser;
-  }
-}
+import type { JwtUser } from '../types/jwtUser';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

@@ -4,6 +4,7 @@ import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { Product, ProductSchema } from './schemas/product.schema';
 import { AuthModule } from 'src/auth/auth.module';
+import { ProductsGateway } from 'src/sockets/products.gateway';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule,
   ],
   controllers: [ProductsController],
-  providers: [ProductsService],
+  providers: [ProductsService, ProductsGateway],
 })
 export class ProductModule {}

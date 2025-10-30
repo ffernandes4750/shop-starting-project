@@ -39,7 +39,7 @@ export class AuthController {
     schema: {
       example: {
         user: {
-          id: '6716a2e3bcd1234abcd56789',
+          _id: '6716a2e3bcd1234abcd56789',
           name: 'Admin',
           email: 'admin@example.com',
           role: 'admin',
@@ -96,7 +96,7 @@ export class AuthController {
     schema: {
       example: {
         user: {
-          id: '6716a2e3bcd1234abcd56789',
+          _id: '6716a2e3bcd1234abcd56789',
           name: 'Admin',
           email: 'admin@example.com',
           role: 'admin',

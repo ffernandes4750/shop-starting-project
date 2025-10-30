@@ -21,15 +21,16 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
     const payload = {
-      sub: String(user._id),
+      _id: String(user._id),
       email: user.email,
+      name: user.name,
       role: user.role as Role,
     };
     const accessToken = await this.jwt.signAsync(payload);
     return {
       accessToken,
       user: {
-        id: String(user._id),
+        _id: String(user._id),
         name: user.name,
         email: user.email,
         role: user.role,

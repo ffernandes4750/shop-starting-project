@@ -16,8 +16,8 @@ export class ProductsService {
     return this.productModel.find().lean().exec();
   }
 
-  async findOne(id: string): Promise<Product> {
-    const product = await this.productModel.findById(id).lean().exec();
+  async findOne(_id: string): Promise<Product> {
+    const product = await this.productModel.findById(_id).lean().exec();
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }
@@ -28,34 +28,37 @@ export class ProductsService {
 
     this.gateway.emitProductsChanged({
       type: 'created',
-      id: doc._id.toString(),
+      _id: doc._id.toString(),
     });
 
     return doc.toObject() as unknown as Product;
   }
 
-  async update(id: string, patch: Partial<Product>): Promise<Product> {
+  async update(_id: string, patch: Partial<Product>): Promise<Product> {
     const updated = await this.productModel
-      .findByIdAndUpdate(id, patch, { new: true, runValidators: true })
+      .findByIdAndUpdate(_id, patch, { new: true, runValidators: true })
       .lean()
       .exec();
     if (!updated) throw new NotFoundException('Product not found');
 
     this.gateway.emitProductsChanged({
       type: 'updated',
-      id: String((updated as any)._id),
+      _id: String((updated as any)._id),
     });
 
     return updated;
   }
 
-  async delete(id: string): Promise<{ deleted: boolean }> {
-    const deleted = await this.productModel.findByIdAndDelete(id).lean().exec();
+  async delete(_id: string): Promise<{ deleted: boolean }> {
+    const deleted = await this.productModel
+      .findByIdAndDelete(_id)
+      .lean()
+      .exec();
     if (!deleted) throw new NotFoundException('Product not found');
 
     this.gateway.emitProductsChanged({
       type: 'deleted',
-      id,
+      _id,
     });
 
     return { deleted: true };

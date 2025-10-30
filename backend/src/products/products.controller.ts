@@ -44,13 +44,13 @@ export class ProductsController {
     schema: {
       example: [
         {
-          id: '6716a2e3bcd1234abcd56789',
+          _id: '6716a2e3bcd1234abcd56789',
           name: 'Majestic Vintage Mocha Overcoat',
           price: 129.99,
           description: 'Casaco comprido com estilo vintage em tom mocha.',
         },
         {
-          id: '6716a2e3bcd1234abcd56790',
+          _id: '6716a2e3bcd1234abcd56790',
           name: 'Enchanting Blush Dream Gown',
           price: 189.99,
           description:
@@ -63,14 +63,14 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get(':id')
+  @Get(':_id')
   @ApiOperation({ summary: 'Obter produto por ID' })
-  @ApiParam({ name: 'id', description: 'ID do produto (ObjectId)' })
+  @ApiParam({ name: '_id', description: 'ID do produto (ObjectId)' })
   @ApiOkResponse({
     description: 'Produto encontrado',
     schema: {
       example: {
-        id: '6716a2e3bcd1234abcd56789',
+        _id: '6716a2e3bcd1234abcd56789',
         name: 'Majestic Vintage Mocha Overcoat',
         price: 129.99,
         description: 'Casaco comprido vintage em tom mocha.',
@@ -97,8 +97,8 @@ export class ProductsController {
       },
     },
   })
-  async findOne(@Param('id') id: string) {
-    return this.productsService.findOne(id);
+  async findOne(@Param('_id') _id: string) {
+    return this.productsService.findOne(_id);
   }
 
   // --------- Admin (escrita) ---------
@@ -112,7 +112,7 @@ export class ProductsController {
     description: 'Produto criado',
     schema: {
       example: {
-        id: '6716a2e3bcd1234abcd56789',
+        _id: '6716a2e3bcd1234abcd56789',
         name: 'Majestic Vintage Mocha Overcoat',
         price: 129.99,
         description: 'Casaco comprido vintage em tom mocha.',
@@ -156,17 +156,17 @@ export class ProductsController {
     return this.productsService.create(dto);
   }
 
-  @Patch(':id')
+  @Patch(':_id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiOperation({ summary: 'Atualizar produto (admin)' })
   @ApiCookieAuth('accessToken')
-  @ApiParam({ name: 'id', description: 'ID do produto (ObjectId)' })
+  @ApiParam({ name: '_id', description: 'ID do produto (ObjectId)' })
   @ApiOkResponse({
     description: 'Produto atualizado',
     schema: {
       example: {
-        id: '6716a2e3bcd1234abcd56789',
+        _id: '6716a2e3bcd1234abcd56789',
         name: 'Majestic Vintage Mocha Overcoat (Updated)',
         price: 139.99,
         description: 'Descrição atualizada.',
@@ -213,17 +213,17 @@ export class ProductsController {
       },
     },
   })
-  update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
-    return this.productsService.update(id, dto);
+  update(@Param('_id') _id: string, @Body() dto: UpdateProductDto) {
+    return this.productsService.update(_id, dto);
   }
 
-  @Delete(':id')
+  @Delete(':_id')
   @HttpCode(204)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiOperation({ summary: 'Eliminar produto (admin)' })
   @ApiCookieAuth('accessToken')
-  @ApiParam({ name: 'id', description: 'ID do produto (ObjectId)' })
+  @ApiParam({ name: '_id', description: 'ID do produto (ObjectId)' })
   @ApiNoContentResponse({ description: 'Removido com sucesso' })
   @ApiNotFoundResponse({
     description: 'Produto não encontrado',
@@ -255,7 +255,7 @@ export class ProductsController {
       },
     },
   })
-  async remove(@Param('id') id: string): Promise<void> {
-    await this.productsService.delete(id);
+  async remove(@Param('_id') _id: string): Promise<void> {
+    await this.productsService.delete(_id);
   }
 }

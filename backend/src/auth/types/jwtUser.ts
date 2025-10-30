@@ -1,6 +1,7 @@
 export type JwtUser = {
-  sub: string;
+  _id: string;
   email: string;
+  name: string;
   role: 'admin' | 'user';
   iat?: number;
   exp?: number;

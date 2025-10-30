@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 
 type ProductsChangedPayload = {
   type: 'created' | 'deleted' | 'updated';
-  id?: string;
+  _id?: string;
 };
 
 @WebSocketGateway({

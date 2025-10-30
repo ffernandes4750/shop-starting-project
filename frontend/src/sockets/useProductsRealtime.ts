@@ -4,7 +4,7 @@ import { getSocket } from "./socket.ts";
 
 type ProductsChangedPayload = {
   type: "created" | "deleted" | "updated";
-  id?: string;
+  _id?: string;
 };
 
 /**

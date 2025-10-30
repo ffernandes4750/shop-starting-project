@@ -25,8 +25,8 @@ export default function Product({
   const user = useAppSelector((s) => s.auth.user);
   const isAdmin = user?.role == "admin";
 
-  async function handleRemove(id: string) {
-    await onRemoveItem(id);
+  async function handleRemove(_id: string) {
+    await onRemoveItem(_id);
     await queryClient.refetchQueries({ queryKey: ["products"] });
   }
 

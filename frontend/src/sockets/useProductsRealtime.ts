@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getSocket } from "./socket.ts";
+import { toast } from "react-toastify";
 
 type ProductsChangedPayload = {
   type: "created" | "deleted" | "updated";
@@ -22,6 +23,18 @@ export function useProductsRealtime() {
       console.log("[Socket] products:changed", payload);
       // Invalida a cache — o React Query refaz automaticamente o fetch
       queryClient.invalidateQueries({ queryKey: ["products"] });
+
+      switch (payload.type) {
+        case "created":
+          toast.success("Novo produto adicionado!");
+          break;
+        case "updated":
+          toast.info("Produto atualizado");
+          break;
+        case "deleted":
+          toast.warning("Produto removido");
+          break;
+      }
     };
 
     socket.on("products:changed", onProductsChanged);

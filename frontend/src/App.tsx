@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { useAppSelector } from "./redux/hooks.ts";
-import { useHydrateSession } from "./features/auth/useHydrateSession.ts";
-import HomePage from "./screens/homePage/HomePage.tsx";
+import HomePage from "./screens/HomePage.tsx";
 import LoginPage from "./screens/LoginPage.tsx";
+import CojmosPage from "./screens/cojmos/CojmosPage.tsx";
+import CojmosLoginPage from "./screens/cojmos/CojmosLoginPage.tsx";
+import CojmosStationPage from "./screens/cojmos/CojmosStationPage.tsx";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
   const theme = useAppSelector((s) => s.config.theme);
-  useHydrateSession();
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -16,7 +17,13 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/cojmos" element={<CojmosPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/cojmos/login" element={<CojmosLoginPage />} />
+      <Route
+        path="/cojmos/station/:stationId"
+        element={<CojmosStationPage />}
+      />
     </Routes>
   );
 }

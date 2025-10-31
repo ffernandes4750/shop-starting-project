@@ -9,11 +9,6 @@
   border: 1px solid var(--color-border);
 }
 
-/* alternativa de texto atenuado coerente */
-.text-muted-soft {
-  color: var(--color-muted) !important;
-}
-
 /* Ajusta botões no dark para seguir a tua paleta */
 :root[data-theme="dark"] .btn-primary {
   background-color: var(--color-primary);
@@ -33,22 +28,8 @@
 :root[data-theme="dark"] .btn-outline-secondary:hover {
   background: var(--color-border);
 }
+
 .text-muted,
 .text-muted-soft {
   color: var(--color-muted) !important;
-}
-
-.icon-btn {
-  color: black;
-  background-color: transparent;
-  margin-left: 50px;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-  transition: background 0.2s;
-}
-
-.icon-btn svg {
-  width: 28px;
-  height: 28px;
 }

@@ -8,3 +8,34 @@
   font-size: 1.5rem;
   color: var(--color-text);
 }
+.navbar .hello-user-span {
+  margin-left: 70px;
+}
+
+.icon-btn {
+  color: rgb(0, 0, 0);
+  background-color: transparent;
+  margin-left: 50px;
+
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.icon-btn:hover {
+  color: rgb(0, 0, 0);
+  background-color: transparent;
+}
+
+.icon-btn svg {
+  width: 23px;
+  height: 23px;
+}
+
+:root[data-theme="dark"] .icon-btn {
+  color: white;
+  background: transparent;
+}
+:root[data-theme="dark"] .icon-btn:hover {
+  background: transparent;
+}

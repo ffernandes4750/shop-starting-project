@@ -2,7 +2,7 @@ import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
 
-// Cria uma única instância de socket para a app inteira.
+// Cria uma única instância de socket para a app inteira. SINGLETON.
 export function getSocket(): Socket {
   if (!socket) {
     const baseUrl = "http://localhost:3000";
